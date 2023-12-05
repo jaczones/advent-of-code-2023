@@ -9,6 +9,46 @@ import (
 	"github.com/jaczones/advent-of-code-2023/util"
 )
 
+func DayOne(input string) uint32 {
+	text := input
+	textArray := []rune(text)
+	numWords := [...]string{"zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"}
+
+	for i := 0; i < 10; i++ {
+		loc := strings.Index(text, numWords[i])
+		for loc != -1 {
+			textArray[loc+1] = []rune(strconv.Itoa(i))[0]
+			text = string(textArray)
+			loc = strings.Index(text, numWords[i])
+		}
+	}
+
+	full := strings.Split(text, "\n")
+
+	var total uint32
+	for _, input := range full {
+		nums := getDigitsFromString(input)
+		if len(nums) > 0 {
+			total += nums[0]*10 + nums[len(nums)-1]
+		}
+	}
+
+	return total
+}
+
+func getDigitsFromString(input string) []uint32 {
+	var nums []uint32
+	digitsRegex := regexp.MustCompile(`\d`)
+	digitRunes := digitsRegex.FindAll([]byte(input), -1)
+
+	for _, r := range digitRunes {
+		num, _ := strconv.Atoi(string(r))
+		nums = append(nums, uint32(num))
+	}
+
+	return nums
+}
+
 func SolveDayOne(sessionCookie string) {
 	url := "https://adventofcode.com/2023/day/1/input"
 
@@ -18,39 +58,6 @@ func SolveDayOne(sessionCookie string) {
 		return
 	}
 
-	lines := strings.Split(content, "\n")
-
-	digitRegex := regexp.MustCompile(`\d`)
-
-	var total int
-
-	for _, line := range lines {
-		if line == "" {
-			continue
-		}
-
-		digits := digitRegex.FindAllString(line, -1)
-
-		if len(digits) >= 1 {
-			firstDigit, err := strconv.Atoi(digits[0])
-
-			if err != nil {
-				fmt.Println("Error converting first digit:", err)
-				continue
-			}
-
-			lastDigit, err := strconv.Atoi(digits[len(digits)-1])
-			if err != nil {
-				fmt.Println("Error converting last digit:", err)
-				continue
-			}
-
-			fmt.Println("\nLine", line, "first", firstDigit, "last", lastDigit)
-			twoDigit := firstDigit*10 + lastDigit
-			total += twoDigit
-
-		}
-	}
-
-	fmt.Println(total)
+	result := DayOne(content)
+	fmt.Println("Total:", result)
 }
