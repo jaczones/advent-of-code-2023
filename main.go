@@ -10,6 +10,6 @@ func main() {
 	//Get session cookie to get puzzle input
 	sessionCookie := os.Getenv("SESSION_COOKIE")
 
-	solutions.SolveDayOne(sessionCookie)
+	solutions.SolveDayTwo(sessionCookie)
 
 }
