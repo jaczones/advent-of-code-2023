@@ -18,20 +18,13 @@ func SolveDayTwo(sessionCookie string) {
 		return
 	}
 
-	maximumCounts := map[string]int{
-		"red":   12,
-		"green": 13,
-		"blue":  14,
-	}
-
-	noExceedMap := make(map[int]bool)
-
 	games := strings.Split(content, "\n")
 
 	re := regexp.MustCompile(`(\d+)\s+(\w+)`)
 
-gameLoop:
-	for i, game := range games {
+	var totalSum int
+
+	for _, game := range games {
 		// Skip empty strings
 		if game == "" {
 			continue
@@ -39,6 +32,8 @@ gameLoop:
 
 		// Find all matches in the game text
 		matches := re.FindAllStringSubmatch(game, -1)
+
+		colorCounts := make(map[string]int)
 
 		for _, match := range matches {
 			// Extract count and color
@@ -49,23 +44,20 @@ gameLoop:
 			}
 			color := match[2]
 
-			// Check if the count exceeds the maximum for the specific color
-			if count > maximumCounts[color] {
-				// Disqualify the entire game
-				continue gameLoop
+			// Track the highest count for each color
+			if count > colorCounts[color] {
+				colorCounts[color] = count
 			}
 		}
 
-		// If no iteration exceeds the maximum, mark the game number as eligible
-		noExceedMap[i+1] = true
+		// Multiply the highest counts for each color and add to the total sum
+		product := 1
+		for _, count := range colorCounts {
+			product *= count
+		}
+		totalSum += product
 	}
 
-	// Calculate the sum of eligible game numbers
-	var sum int
-	for gameNumber := range noExceedMap {
-		sum += gameNumber
-	}
-
-	// Print the sum of game numbers with no exceedance
-	fmt.Printf("Sum of Game Numbers with No Exceedance: %d\n", sum)
+	// Print the sum of products for all games
+	fmt.Printf("Sum of Products for All Games: %d\n", totalSum)
 }
